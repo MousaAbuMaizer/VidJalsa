@@ -246,8 +246,6 @@ async def process_videos(video_urls: VideoUrls):
 
     combined_summarized_transcript = ""
     
-    print("Received video URLs:", video_urls.urls)
-
     for url in video_urls.urls:
         video_id = extract_video_id(url)          
         data = YouTubeTranscriptApi.get_transcript(video_id)
@@ -259,17 +257,10 @@ async def process_videos(video_urls: VideoUrls):
         summarized_transcript = chain.invoke({"transcript": transcript})
         
         combined_summarized_transcript += summarized_transcript + "\n\n\n\n"
-        print("Checkpoint 1")
         
     chain2 = prompt2 | llm | output_parser 
     response = chain2.invoke({'combined_summarized_transcript': combined_summarized_transcript})
 
-    # Save the output as a text file
-    output_path = "/Users/mabumaizer001/PwC Projects/video-scriptum/Backend/summarized_trans.txt"
-    with open(output_path, 'w') as file:
-        file.write(response)
-
-    print("Checkpoint 2")
     json_output = json.loads(response)
     
     title = json_output["Title"]
