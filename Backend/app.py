@@ -55,11 +55,11 @@ class Video(BaseModel):
 @app.post("/api/videos_preview")
 async def return_video(video: Video):
     try:
+        api_key = os.getenv('YOUTUBE_API_KEY')
         topic = video.video.lower()  
         maxResults = 8
         videos_info = []
         pageToken = None
-        api_key = "AIzaSyCSIYVJRr6Gyid80eEdhyiZwS17TnWcFb0"
         youtube = build('youtube', 'v3', developerKey=api_key)
         while len(videos_info) < maxResults:
             search = youtube.search().list(
