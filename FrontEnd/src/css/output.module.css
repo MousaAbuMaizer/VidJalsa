@@ -1,0 +1,212 @@
+.mainContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    color: white;
+    overflow: hidden;
+}
+.leftContainer {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    gap: 10px;
+}
+
+.rightContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory; 
+    padding: 0 15%;
+    height: 100%; 
+    position: relative;
+    background-color: rgba(5, 5, 5, 0.6);
+    z-index: 4;
+    border-radius: 12px;
+}
+
+.rightContainer::-webkit-scrollbar {
+    display: none; 
+}
+
+.gradientText {
+    font-size: 6rem;
+    font-weight: bold;
+    background: linear-gradient(75deg, #2a2425, #dcf3ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin: 0; 
+}
+
+.button {
+    display: block;
+    margin: 10px 0; /* Adjust based on your layout */
+    padding: 15px 30px;
+    border: 2px solid white;
+    border-radius: 12px;
+    background-color: transparent; /* Ensure background is transparent */
+    color: white;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 30px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease; /* Transition for smooth effect on hover */
+    position: relative; /* Position relative for pseudo-elements */
+    overflow: hidden; /* Hide overflow to contain pseudo-elements */
+}
+
+.button:hover {
+    background-color: rgba(255, 255, 255); /* Temporarily set a solid color on hover for testing */
+    color: black;
+}
+
+
+.button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, transparent 100%);
+    opacity: 0; /* Start fully transparent */
+    transition: opacity 0.3s ease; /* Smooth transition for the background */
+    z-index: -1; /* Ensure it's below the text content */
+}
+
+.button:hover::after {
+    opacity: 1; /* Reveal gradient background on hover */
+}
+
+.fadeContainer {
+    position: relative;
+    height: 100%;
+    width: 35%; 
+    margin: 0 auto; 
+}
+
+.topFade, .bottomFade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 10px; 
+    content: "";
+    pointer-events: none; 
+}
+
+.topFade {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, transparent 100%);
+    z-index: 5;
+    height: 300px;
+}
+
+.bottomFade {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 1) 50%, transparent 100%);
+    z-index: 5;
+    height: 400px;
+}
+
+.videoContainer {
+    margin: 15px 0;
+    scroll-snap-align: center; 
+    text-align: center;
+    transition: opacity 0.5s;
+    margin-bottom: 50px;
+}
+.videoContainer a { 
+    text-decoration: none; 
+    color: inherit;
+}
+
+.videoContainer:first-child {
+    margin-top: 500px;
+}
+
+.videoContainer:last-child {
+    margin-bottom: 500px;
+}
+
+.videoThumbnail {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 12px;
+}
+
+.videoTitle {
+    color: #FFF;
+    margin-top: 20px;
+    text-decoration: none;
+    opacity: 0; 
+    transition: opacity 0.5s ease-in-out;
+    font-size: 27px;
+}
+
+.visible {
+    opacity: 1; 
+}
+
+.videoContainer.centered .videoTitle {
+    visibility: visible; 
+}
+
+.scrollButton {
+    position: absolute;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 40px;
+    color: white;
+    z-index: 6;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fadeContainer > .scrollButton:first-of-type {
+    top: 7%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.fadeContainer > .scrollButton:last-of-type {
+    bottom: 10%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.scrollButton.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.videoContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 35px;
+}
+
+.videoThumbnailContainer {
+    flex: 0 1 auto;
+}
+
+.checkboxContainer {
+    flex: 0 0 auto;
+    margin-left: 10px;
+}
+
+

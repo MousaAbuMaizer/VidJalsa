@@ -1,0 +1,288 @@
+.previewContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    color: white;
+    background-color: #000;
+    overflow: hidden;
+}
+
+.rightContainer {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+.fadeContainer {
+    position: relative;
+    height: 100%;
+    width: 35%; 
+    margin: 0 auto; 
+}
+
+.leftContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory; 
+    padding: 0 15%;
+    height: 100%; 
+    position: relative;
+    background-color: rgba(46, 46, 46, 0.6);
+    z-index: 4;
+    border-radius: 12px;
+}
+
+.leftContainer::-webkit-scrollbar {
+    display: none; 
+}
+
+.topFade, .bottomFade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 10px; 
+    content: "";
+    pointer-events: none; 
+}
+
+.topFade {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, transparent 100%);
+    z-index: 5;
+    height: 300px;
+}
+
+.bottomFade {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 1) 50%, transparent 100%);
+    z-index: 5;
+    height: 400px;
+}
+
+.videoContainer {
+    margin: 15px 0;
+    scroll-snap-align: center; 
+    text-align: center;
+    transition: opacity 0.5s;
+    margin-bottom: 50px;
+}
+.videoContainer a { 
+    text-decoration: none; 
+    color: inherit;
+}
+
+.videoContainer:first-child {
+    margin-top: 500px;
+}
+
+.videoContainer:last-child {
+    margin-bottom: 500px;
+}
+
+.videoThumbnail {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 12px;
+}
+
+.videoTitle {
+    color: #FFF;
+    margin-top: 20px;
+    text-decoration: none;
+    opacity: 0; 
+    transition: opacity 0.5s ease-in-out;
+    font-size: 27px;
+}
+
+.visible {
+    opacity: 1; 
+}
+
+.videoContainer.centered .videoTitle {
+    visibility: visible; 
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.gradientText {
+    font-size: 7rem;
+    font-weight: bold;
+    background: linear-gradient(75deg, #2a2425, #dcf3ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin: 0; 
+}
+
+.scrollButton {
+    position: absolute;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 40px;
+    color: white;
+    z-index: 6;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fadeContainer > .scrollButton:first-of-type {
+    top: 7%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.fadeContainer > .scrollButton:last-of-type {
+    bottom: 10%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.scrollButton.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 3px solid #FFF;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.checkbox:checked::before {
+    color: #00000000;
+    font-size: 18px;
+}
+.checkbox:checked::after {
+    content: "✦"; 
+    color: #000;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    font-size: 18px;
+    position: relative;
+    left: 0.5px;
+}
+
+.checkboxContainer.visible {
+    visibility: visible;
+}
+
+.checkbox:checked {
+    background-color: #FFF;
+    border-color: #000;
+}
+
+.videoContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-left: 50px;
+    gap: 35px;
+}
+
+.videoThumbnailContainer {
+    flex: 0 1 auto;
+}
+
+.checkboxContainer {
+    flex: 0 0 auto;
+    margin-left: 10px;
+}
+
+
+
+.selectionInfo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 50px;
+    gap: 60px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.selectionInfo.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.videoCount {
+    font-size: 2.2rem;
+    background: linear-gradient(75deg, #2a2425, #dcf3ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-right: 20px;
+}
+
+.submitArrowButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.buttonText {
+    font-size: 1.8rem;
+    color: #000000;
+    font-family: 'Montserrat', sans-serif;
+    margin-right: 5px;
+}
+
+.buttonShow {
+    opacity: 1;
+    visibility: visible;
+}
+
+.buttonHide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.feather.feather-arrow-right {
+    stroke: currentColor;
+}

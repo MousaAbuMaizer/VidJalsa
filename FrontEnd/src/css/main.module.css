@@ -1,0 +1,209 @@
+.mainContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    color: white;
+    overflow: hidden;
+}
+
+.mainContainer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.contentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    width: 100%;
+    position: relative;
+}
+
+h1, .emoji, input[type="text"] {
+    position: relative;
+}
+
+.splitContainer {
+    display: flex;
+    width: 80%;
+    height: auto;
+    position: relative;
+}
+
+.leftContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    width: 50%;
+    text-align: left; 
+}
+
+.rightContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+
+.gradientText {
+    font-size: 7rem;
+    font-weight: bold;
+    background: linear-gradient(75deg, #2a2425, #dcf3ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin: 0;
+}
+
+.formContainer {
+    display: flex;
+    width: 70%;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.5s ease-in-out;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.inputLabel {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 33px;
+    text-align: center;
+}
+
+input[type="text"] {
+    width: calc(100% - 60px);
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+    border-radius: 12px;
+    outline: none;
+    font-size: 26px;
+    position: relative;
+    z-index: 3;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    background: linear-gradient(75deg, #2a2425, #dcf3ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    height: 30px;
+    flex-grow: 1;
+    transition: flex-grow 0.5s ease-in-out;
+}
+
+input[type="text"]::placeholder {
+    color: #A9A9A9;
+    text-align: center;
+}
+input[type="text"].withButton {
+    width: calc(100% - 110px);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.25rem 0;
+    position: relative;
+    width: 100%;
+}
+
+.line {
+    flex-grow: 0.5;
+    height: 1px;
+    background-color: white;
+    position: relative;
+}
+
+.dividerText {
+    padding: 0 10px;
+    color: white;
+    font-style: italic;
+    font-size: 1.4rem;
+}
+
+.trendingTopicsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.topicBubble {
+    padding: 10px 20px;
+    background-color: transparent;
+    color: white;
+    background: linear-gradient(75deg, #2a2425, #dcf3ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border: 1px solid white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    &:hover {
+        background-color: white;
+        color: black;
+    }
+}
+
+.submitArrowButton {
+    padding: 0;
+    width: 52px;
+    height: 52px;
+    margin-left: 10px;
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease-in-out;
+    margin-bottom: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    margin-right: 10px;
+}
+
+.submitArrowButton svg {
+    stroke: black;
+}
+
+.buttonShow {
+    opacity: 1;
+    visibility: visible;
+}
+
+.buttonHide {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
