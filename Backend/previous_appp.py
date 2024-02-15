@@ -1,4 +1,3 @@
-from fastapi import FastAPI
 from pytrends.request import TrendReq
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,7 +18,9 @@ from renderBlog import renderBlog
 import uuid
 from fastapi.staticfiles import StaticFiles
 from googleapiclient.discovery import build
-
+import time
+import asyncio
+import concurrent.futures
 
 app = FastAPI()
 
@@ -56,62 +57,51 @@ class Video(BaseModel):
 async def return_video(video: Video):
     try:
         api_key = os.getenv('YOUTUBE_API_KEY')
-        topic = video.video.lower()  
-        maxResults = 8
+        topic = video.video.lower()
+        maxResults = 30
         videos_info = []
-        pageToken = None
         youtube = build('youtube', 'v3', developerKey=api_key)
-        while len(videos_info) < maxResults:
-            search = youtube.search().list(
-                q=topic,
-                part='snippet',
-                type='video',
-                order='relevance',
-                maxResults=maxResults,
-                pageToken=pageToken,
-                safeSearch='strict',  
-                relevanceLanguage='en'  
-            ).execute()
-            for item in search['items']:
-                video_id = item['id']['videoId']
-
-                transcript_available = True
-                try:
-                    transcript = YouTubeTranscriptApi.get_transcript(video_id)
-                    if len(transcript) > 32000:
-                        continue
-                except Exception as e:
-                    transcript_available = False
-                
-                if not transcript_available:
-                    continue
-
-                video_title = item['snippet']['title']
-                video_link = 'https://www.youtube.com/watch?v=' + video_id
-                thumbnail = item['snippet']['thumbnails']['high']['url']
-                
-                # if topic.lower() not in video_title.lower():
-                #     continue
-                
-                video_details = youtube.videos().list(part="contentDetails", id=video_id).execute()
-                duration = parse_duration(video_details['items'][0]['contentDetails']['duration'])
-                
-                if not (60 < duration.total_seconds() < 900):  
-                    continue
-                
-                video_info = {
-                    'title': video_title,
-                    'link': video_link,
-                    'thumbnail': thumbnail,
-                    'video_id': video_id,
-                }
-                videos_info.append(video_info)
-                
-                if len(videos_info) == maxResults:
-                    break
+        search = youtube.search().list(
+            q=topic,
+            part='snippet',
+            type='video',
+            order='relevance',
+            maxResults=maxResults,
+            safeSearch='strict',
+            relevanceLanguage='en'
+        ).execute()
+        
+        video_ids = [item['id']['videoId'] for item in search['items']]
+        # Fetch details for these videos in one go
+        video_details_batch = youtube.videos().list(part="contentDetails", id=",".join(video_ids)).execute()
+        
+        # Prepare a map for quick lookup of video details
+        video_details_map = {item['id']: parse_duration(item['contentDetails']['duration']).total_seconds() for item in video_details_batch['items']}
+        
+        # Loop over the original search items, now with access to duration and other details
+        for item in search['items']:
+            video_id = item['id']['videoId']
+            duration_seconds = video_details_map.get(video_id)
             
-            pageToken = search.get('nextPageToken')
-            if not pageToken:
+            # Check duration criteria
+            if not (60 < duration_seconds < 1800):
+                continue
+
+            # Assume transcript fetching logic here, adjusted for async or threaded execution as necessary
+            
+            video_title = item['snippet']['title']
+            video_link = 'https://www.youtube.com/watch?v=' + video_id
+            thumbnail = item['snippet']['thumbnails']['high']['url']
+            
+            video_info = {
+                'title': video_title,
+                'link': video_link,
+                'thumbnail': thumbnail,
+                'video_id': video_id,
+            }
+            videos_info.append(video_info)
+            
+            if len(videos_info) == maxResults:
                 break
         
         return videos_info
@@ -167,7 +157,8 @@ class VideoUrls(BaseModel):
 
 @app.post("/api/process_videos")
 async def process_videos(video_urls: VideoUrls):
-    
+    start= time.time()
+    print("Processing Started")
     prompt1 = PromptTemplate.from_template("""
     **Enhanced Summarization Task for Web Content Creation**
 
@@ -273,5 +264,9 @@ async def process_videos(video_urls: VideoUrls):
     directory_name = DirectoryGenerator(html_content , deployment_directory_folder)
 
     deployment_url = f"http://127.0.0.1:7000/{directory_name}/index.html"
+    
+    end = time.time()
+    
+    print("Time Taken: ", end - start) 
         
     return {"message": "The Processing Is Finished!", "deployment_url": deployment_url}

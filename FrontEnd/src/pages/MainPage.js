@@ -15,7 +15,7 @@ const MainPage = () => {
     useEffect(() => {
         const fetchTrendingTopics = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:7000/api/trending');
+                const response = await fetch('http://127.0.0.1:7000/trending');
                 const topics = await response.json();
                 setTrendingTopics(topics);
             } catch (error) {
@@ -44,7 +44,7 @@ const MainPage = () => {
         }
     
         try {
-            const response = await fetch('http://127.0.0.1:7000/api/videos_preview', {
+            const response = await fetch('http://127.0.0.1:7000/videos_preview', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

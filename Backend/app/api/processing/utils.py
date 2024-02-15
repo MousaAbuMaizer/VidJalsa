@@ -1,3 +1,47 @@
+import re
+import os
+import uuid
+
+
+def parse_article(content):
+    pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
+    matches = re.findall(pattern, content, re.DOTALL)
+
+    article_json = {'Paragraphs': []}
+    for key, value in matches:
+        if "Paragraph" in key:
+            article_json['Paragraphs'].append(value)
+        else:
+            article_json[key] = value
+
+    return article_json
+
+def DirectoryGenerator(html_content , deployment_directory):
+
+    user_id = str(uuid.uuid4())
+    user_output_dir = os.path.join(deployment_directory, user_id)
+    os.makedirs(user_output_dir, exist_ok=True)
+
+    with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
+        html_file.write(html_content)
+
+    return user_output_dir
+
+
+def extract_video_id(url: str) -> str:
+    regex_patterns = [
+        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)',
+        r'(?:https?:\/\/)?youtu\.be\/([^&\s]+)',  
+        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
+        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
+    ]
+
+    for pattern in regex_patterns:
+        match = re.search(pattern, url)
+        if match:
+            return match.group(1)
+    return ""
+
 
 def renderBlog(title,question,author,paragraphs):
 
@@ -528,6 +572,4 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
-
-
     """ 
