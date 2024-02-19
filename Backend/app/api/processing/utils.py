@@ -16,7 +16,7 @@ def parse_article(content):
 
     return article_json
 
-def DirectoryGenerator(html_content , deployment_directory):
+def directory_generator(html_content , deployment_directory):
 
     user_id = str(uuid.uuid4())
     user_output_dir = os.path.join(deployment_directory, user_id)
@@ -27,6 +27,12 @@ def DirectoryGenerator(html_content , deployment_directory):
 
     return user_output_dir
 
+def generate_deployment_url(directory_name: str) -> str:
+    
+    print('Directory Name:', directory_name)
+    print(f"http://127.0.0.1:7000/{directory_name}/index.html")
+    
+    return f"http://127.0.0.1:7000/{directory_name}/index.html"
 
 def extract_video_id(url: str) -> str:
     regex_patterns = [
@@ -43,7 +49,7 @@ def extract_video_id(url: str) -> str:
     return ""
 
 
-def renderBlog(title,question,author,paragraphs):
+def render_blog(title,question,author,paragraphs):
 
     paragraphs_html_content = ""
     for paragraph in paragraphs:

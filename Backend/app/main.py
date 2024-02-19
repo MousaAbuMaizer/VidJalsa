@@ -4,7 +4,6 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router 
 
-
 app = FastAPI()
 
 app.add_middleware(

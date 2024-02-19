@@ -3,6 +3,8 @@
         "dotenv",
         "fastapi",
         "flexbox",
+        "genai",
+        "generativeai",
         "googleapiclient",
         "interactable",
         "isodate",

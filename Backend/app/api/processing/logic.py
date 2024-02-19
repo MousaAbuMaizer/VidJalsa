@@ -1,24 +1,35 @@
 import os
 import json
 import time
+import asyncio
 import logging
+from uuid import uuid4
 from fastapi import HTTPException
-from .utils import extract_video_id, DirectoryGenerator, renderBlog
+from fastapi import BackgroundTasks
 from app.schemas import VideoUrls
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_openai import AzureChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+from .utils import extract_video_id, directory_generator, render_blog, generate_deployment_url
+
 from dotenv import load_dotenv
+
+from langchain_google_genai import ChatGoogleGenerativeAI
+import google.generativeai as genai
 
 load_dotenv()
 
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+genai.configure(api_key=GOOGLE_API_KEY)
+google_llm = ChatGoogleGenerativeAI(google_api_key=GOOGLE_API_KEY, model="gemini-pro")
+    
 logger = logging.getLogger(__name__)
 
 AZURE_API_KEY = os.getenv('AZURE_API_KEY')
 AZURE_ENDPOINT = os.getenv('AZURE_ENDPOINT')
-DEPLOYMENT_DIRECTORY = "path/to/deployment/directory"
+DEPLOYMENT_DIRECTORY = "app/user"
 
 llm = AzureChatOpenAI(api_key=AZURE_API_KEY, model="gpt-4-32K", 
                              openai_api_version="2023-07-01-preview", 
@@ -144,11 +155,11 @@ async def process_videos(video_urls: VideoUrls):
         
         print("Checkpoint 4")
         
-        html_content = renderBlog(title, question, author, paragraphs)
+        html_content = render_blog(title, question, author, paragraphs)
         
         print("Checkpoint 5")
         
-        directory_name = DirectoryGenerator(html_content, "app/user")
+        directory_name = directory_generator(html_content, "app/user")
         deployment_url = generate_deployment_url(directory_name)
 
         print(f"Processing Finished in {time.time() - start_time} seconds")
