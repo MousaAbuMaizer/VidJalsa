@@ -2,47 +2,36 @@ import re
 import os
 import uuid
 
+def generate_deployment_url(directory_name: str) -> str:
+    return f"http://127.0.0.1:7000/{directory_name}/index.html"
 
 def parse_json_like_string(json_string):
-    # Splitting the string into lines
     lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
     parsed_data = {}
-
-    # Variables to keep track of array processing
     inside_array = False
     array_key = ''
     array_values = []
 
     for line in lines:
-        # Check if we are starting an array
         if '[' in line:
             colon_index = line.find(':')
             array_key = line[:colon_index].strip().strip('"{} ')
             inside_array = True
             continue
-
-        # Check if we are ending an array
         if ']' in line:
             inside_array = False
             parsed_data[array_key] = array_values
             array_values = []
             continue
-
-        # Process lines inside an array
         if inside_array:
             array_value = line.strip().strip('"{}[], ')
             if array_value:
                 array_values.append(array_value)
             continue
 
-        # Finding the position of the colon to separate key and value
         colon_index = line.find(':')
         if colon_index != -1:
-            # Extracting the key
             key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
             value = line[colon_index + 1:].strip().strip('"{}[], ')
             parsed_data[key] = value
 
@@ -62,15 +51,13 @@ def parse_article(content):
 
     return article_json
 
-def DirectoryGenerator(html_content , deployment_directory):
 
+def DirectoryGenerator(html_content , deployment_directory):
     user_id = str(uuid.uuid4())
     user_output_dir = os.path.join(deployment_directory, user_id)
     os.makedirs(user_output_dir, exist_ok=True)
-
     with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
         html_file.write(html_content)
-
     return user_output_dir
 
 
@@ -81,7 +68,6 @@ def extract_video_id(url: str) -> str:
         r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
         r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
     ]
-
     for pattern in regex_patterns:
         match = re.search(pattern, url)
         if match:
@@ -90,7 +76,6 @@ def extract_video_id(url: str) -> str:
 
 
 def renderBlog(title,question,author,paragraphs):
-
     paragraphs_html_content = ""
     for paragraph in paragraphs:
             paragraphs_html_content += f'    <p>{paragraph}</p>\n'
