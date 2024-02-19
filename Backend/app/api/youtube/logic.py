@@ -1,11 +1,12 @@
 from googleapiclient.discovery import build
-import os 
+import os
 from isodate import parse_duration
 from fastapi import HTTPException
 from app.schemas import Video
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 def initialize_youtube_service() -> object:
     """Initialize and return the YouTube service."""
@@ -24,7 +25,8 @@ def fetch_search_results(youtube, topic: str, max_results: int) -> list:
         order='relevance',
         maxResults=max_results,
         safeSearch='strict',
-        relevanceLanguage='en'
+        relevanceLanguage='en',
+        videoCaption='closedCaption'
     ).execute()
 
 
@@ -36,7 +38,8 @@ def extract_video_ids(search_response: dict) -> list:
 def fetch_video_details(youtube, video_ids: list) -> dict:
     """Fetch details for a list of video IDs."""
     response = youtube.videos().list(part="contentDetails", id=",".join(video_ids)).execute()
-    return {item['id']: parse_duration(item['contentDetails']['duration']).total_seconds() for item in response['items']}
+    return {item['id']: parse_duration(item['contentDetails']['duration']).total_seconds() for item in
+            response['items']}
 
 
 def filter_videos(video_ids: list, video_details_map: dict, search_response: dict, max_results: int) -> list:
@@ -65,7 +68,7 @@ def format_video_info(video_item: dict) -> dict:
     }
 
 
-async def return_video_previews(video: Video) :
+async def return_video_previews(video: Video):
     """Return a list of video previews based on the video topic."""
     try:
         youtube = initialize_youtube_service()
@@ -77,4 +80,4 @@ async def return_video_previews(video: Video) :
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to fetch video previews.")    
+        raise HTTPException(status_code=500, detail="Failed to fetch video previews.")
