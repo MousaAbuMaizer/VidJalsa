@@ -38,17 +38,22 @@ To set up VidJalsa for local development or deployment, follow these steps:
 ## Usage
 To run VidJalsa locally:
 
-1. Start the backend server:
+1. From the main folder, navigate to 'Backend' Folder
    ```
-   uvicorn app:app --reload --port 7000
+   cd Backend
    ```
-2. Start the frontend application:
+
+2. Start the backend server:
+   ```
+   uvicorn app.main:app --reload --port 7000
+   ```
+3. Start the frontend application:
    ```
    npm start
    ```
    This will launch the React app in your default browser.
 
-3. To generate a blog post, pick a topic, choose the videos based on the topic, and then press 'Create'.
+4. To generate a blog post, pick a topic, choose the videos based on the topic, and then press 'Create'.
 
 ## License
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
