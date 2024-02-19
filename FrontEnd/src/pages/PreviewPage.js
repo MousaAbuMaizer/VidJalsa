@@ -102,7 +102,7 @@ const PreviewPage = () => {
         const videoLinks = selectedVideos.map(video => video.link);
     
         try {
-            const response = await fetch('http://127.0.0.1:7000/api/process_videos', {
+            const response = await fetch('http://127.0.0.1:7000/process_videos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
