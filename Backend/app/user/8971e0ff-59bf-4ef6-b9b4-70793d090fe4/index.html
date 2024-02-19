@@ -1,110 +1,13 @@
-import re
-import os
-import uuid
 
-
-def parse_json_like_string(json_string):
-    # Splitting the string into lines
-    lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
-    parsed_data = {}
-
-    # Variables to keep track of array processing
-    inside_array = False
-    array_key = ''
-    array_values = []
-
-    for line in lines:
-        # Check if we are starting an array
-        if '[' in line:
-            colon_index = line.find(':')
-            array_key = line[:colon_index].strip().strip('"{} ')
-            inside_array = True
-            continue
-
-        # Check if we are ending an array
-        if ']' in line:
-            inside_array = False
-            parsed_data[array_key] = array_values
-            array_values = []
-            continue
-
-        # Process lines inside an array
-        if inside_array:
-            array_value = line.strip().strip('"{}[], ')
-            if array_value:
-                array_values.append(array_value)
-            continue
-
-        # Finding the position of the colon to separate key and value
-        colon_index = line.find(':')
-        if colon_index != -1:
-            # Extracting the key
-            key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
-            value = line[colon_index + 1:].strip().strip('"{}[], ')
-            parsed_data[key] = value
-
-    return parsed_data
-
-
-def parse_article(content):
-    pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
-    matches = re.findall(pattern, content, re.DOTALL)
-
-    article_json = {'Paragraphs': []}
-    for key, value in matches:
-        if "Paragraph" in key:
-            article_json['Paragraphs'].append(value)
-        else:
-            article_json[key] = value
-
-    return article_json
-
-def DirectoryGenerator(html_content , deployment_directory):
-
-    user_id = str(uuid.uuid4())
-    user_output_dir = os.path.join(deployment_directory, user_id)
-    os.makedirs(user_output_dir, exist_ok=True)
-
-    with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
-        html_file.write(html_content)
-
-    return user_output_dir
-
-
-def extract_video_id(url: str) -> str:
-    regex_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)',
-        r'(?:https?:\/\/)?youtu\.be\/([^&\s]+)',  
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
-    ]
-
-    for pattern in regex_patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return ""
-
-
-def renderBlog(title,question,author,paragraphs):
-
-    paragraphs_html_content = ""
-    for paragraph in paragraphs:
-            paragraphs_html_content += f'    <p>{paragraph}</p>\n'
-
-    return f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{title}</title>
+        <title>Empowering FastAPI: A Comprehensive Guide to Enhancements</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-        """ + """
+        
         <style>
                 body {
                 padding-top:5rem;
@@ -544,7 +447,7 @@ def renderBlog(title,question,author,paragraphs):
             }
 
         </style>
-        """ + f"""
+        
         
         
         </head>
@@ -588,19 +491,25 @@ def renderBlog(title,question,author,paragraphs):
                                 <a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
                             </div>
                             <div class="col-md-10">
-                                <a class="link-dark" style="display: block;" href="author.html">{author}</a>
+                                <a class="link-dark" style="display: block;" href="author.html">Eva, an AI-powered assistant</a>
                                 <span class="author-description">Creator @ VidJalsa.</span>
                                 <span class="post-date">1 1 2030.</span>
                             </div>
                         </div>
 
-                        <h1 class="posttitle"> {title}</h1>
-                        <h2 class="question"> {question}</h2>
+                        <h1 class="posttitle"> Empowering FastAPI: A Comprehensive Guide to Enhancements</h1>
+                        <h2 class="question"> How can we harness the power of FastAPI to create robust, maintainable, and database-integrated applications?</h2>
 
                     </div>
 
                     <div class="article-post">
-                        {paragraphs_html_content}
+                            <p>FastAPI, renowned for its speed and simplicity, can be transformed into a formidable tool for crafting complex and scalable applications with targeted enhancements in routing, dependency injection, and database integration.</p>
+    <p>**Routing Enhancements**: By organizing routes into logical groups using routers, we bring order and clarity to our codebase. FastAPI's intuitive routing system allows us to effortlessly associate these routers with specific endpoint functions, making the management of large-scale applications a breeze.</p>
+    <p>**Dependency Injection**: Injecting database sessions as dependencies into endpoint functions is a game-changer. It decouples the routing aspect from the database operations, promoting modularity and code reusability. Unit testing becomes a cinch, and database interactions are neatly encapsulated within dedicated functions.</p>
+    <p>**Database Integration**: FastAPI seamlessly integrates with SQL Alchemy, an object-relational mapper (ORM), providing a direct line to database interactions. Defining database models and establishing a database connection empowers us to execute database operations within FastAPI endpoints, simplifying data management and manipulation.</p>
+    <p>**Additional Tips**: To elevate our FastAPI applications further, we can create separate functions for database operations, transforming database objects into JSON structures. This separation of concerns enhances code readability and maintainability.</p>
+    <p>Additionally, providing a database session as a dependency ensures that database connections are automatically closed when no longer needed, preventing resource leaks and preserving database performance.</p>
+
                     </div>
                 </div>
             </div>
@@ -618,4 +527,4 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
-    """ 
+    

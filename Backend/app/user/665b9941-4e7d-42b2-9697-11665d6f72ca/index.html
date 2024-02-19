@@ -1,110 +1,13 @@
-import re
-import os
-import uuid
 
-
-def parse_json_like_string(json_string):
-    # Splitting the string into lines
-    lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
-    parsed_data = {}
-
-    # Variables to keep track of array processing
-    inside_array = False
-    array_key = ''
-    array_values = []
-
-    for line in lines:
-        # Check if we are starting an array
-        if '[' in line:
-            colon_index = line.find(':')
-            array_key = line[:colon_index].strip().strip('"{} ')
-            inside_array = True
-            continue
-
-        # Check if we are ending an array
-        if ']' in line:
-            inside_array = False
-            parsed_data[array_key] = array_values
-            array_values = []
-            continue
-
-        # Process lines inside an array
-        if inside_array:
-            array_value = line.strip().strip('"{}[], ')
-            if array_value:
-                array_values.append(array_value)
-            continue
-
-        # Finding the position of the colon to separate key and value
-        colon_index = line.find(':')
-        if colon_index != -1:
-            # Extracting the key
-            key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
-            value = line[colon_index + 1:].strip().strip('"{}[], ')
-            parsed_data[key] = value
-
-    return parsed_data
-
-
-def parse_article(content):
-    pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
-    matches = re.findall(pattern, content, re.DOTALL)
-
-    article_json = {'Paragraphs': []}
-    for key, value in matches:
-        if "Paragraph" in key:
-            article_json['Paragraphs'].append(value)
-        else:
-            article_json[key] = value
-
-    return article_json
-
-def DirectoryGenerator(html_content , deployment_directory):
-
-    user_id = str(uuid.uuid4())
-    user_output_dir = os.path.join(deployment_directory, user_id)
-    os.makedirs(user_output_dir, exist_ok=True)
-
-    with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
-        html_file.write(html_content)
-
-    return user_output_dir
-
-
-def extract_video_id(url: str) -> str:
-    regex_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)',
-        r'(?:https?:\/\/)?youtu\.be\/([^&\s]+)',  
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
-    ]
-
-    for pattern in regex_patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return ""
-
-
-def renderBlog(title,question,author,paragraphs):
-
-    paragraphs_html_content = ""
-    for paragraph in paragraphs:
-            paragraphs_html_content += f'    <p>{paragraph}</p>\n'
-
-    return f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{title}</title>
+        <title>Apple Vision Pro: A New Frontier in Spatial Computing</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-        """ + """
+        
         <style>
                 body {
                 padding-top:5rem;
@@ -544,7 +447,7 @@ def renderBlog(title,question,author,paragraphs):
             }
 
         </style>
-        """ + f"""
+        
         
         
         </head>
@@ -588,19 +491,25 @@ def renderBlog(title,question,author,paragraphs):
                                 <a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
                             </div>
                             <div class="col-md-10">
-                                <a class="link-dark" style="display: block;" href="author.html">{author}</a>
+                                <a class="link-dark" style="display: block;" href="author.html">Alexa Innovations with AI</a>
                                 <span class="author-description">Creator @ VidJalsa.</span>
                                 <span class="post-date">1 1 2030.</span>
                             </div>
                         </div>
 
-                        <h1 class="posttitle"> {title}</h1>
-                        <h2 class="question"> {question}</h2>
+                        <h1 class="posttitle"> Apple Vision Pro: A New Frontier in Spatial Computing</h1>
+                        <h2 class="question"> Can Apple Vision Pro truly merge our physical and digital worlds into one seamless experience?</h2>
 
                     </div>
 
                     <div class="article-post">
-                        {paragraphs_html_content}
+                            <p>Embark on a journey to the forefront of digital innovation with the Apple Vision Pro. This revolutionary headset is more than just a device; it's a portal to a new dimension where the digital and the physical converge in extraordinary ways. With the Vision Pro, Apple is not just changing how we see the virtual world, but how we interact with it, blurring the lines between what's real and what's possible.</p>
+    <p>Imagine a world where your digital interactions are as natural and intuitive as your physical ones. The Apple Vision Pro makes this a reality, transforming apps into palpable elements of your space. Picture a web browser expanding across an immense screen, or collaborating on projects with a fluidity that feels second nature. Close the distance with loved ones through life-size FaceTime calls, and watch as your digital world becomes just as engaging as the one you touch and feel.</p>
+    <p>The Apple Vision Pro isn't just about seeing; it's about hearing the digital world in its full glory. With an advanced spatial audio system, sound is no longer just sound—it's an experience. Personalized audio beams to you, while audio raytracing brings the environment to life, ensuring every sound is anchored in your surroundings. This, combined with the headset's 3D mapping capabilities, allows for an immersion so deep, your digital world is indistinguishable from the physical one.</p>
+    <p>At the heart of the Vision Pro lies a powerhouse of processing capability, thanks to its dual-chip design. The M2 chip provides the muscle, while the R1 chip brings sensitivity to the sensory data, resulting in a seamless real-time experience that's as fluid as reality itself. This technological marvel is the foundation of the Vision Pro's ability to deliver spatial computing without a hitch, keeping you anchored in the moment, whether virtual or real.</p>
+    <p>Beyond entertainment and utility, the Apple Vision Pro redefines memory-making. Its 3D camera doesn't just capture images; it captures experiences. Relive your memories with a depth that transports you back in time, making each moment as vivid as when it first happened. And when life's chaos becomes too much, retreat into tranquility with the Mindfulness app, a peaceful sanctuary in the midst of the digital storm.</p>
+    <p>Welcome to the dawn of spatial computing, heralded by the Apple Vision Pro. This device is not just a step forward; it's a leap into a new realm of digital interaction. The Vision Pro invites you to reimagine the possibilities of the digital world, offering an experience so immersive, so integrated with your physical space, that it rewrites the narrative of what technology can do. With the Vision Pro, Apple isn't just changing the game; it's creating an entirely new one.</p>
+
                     </div>
                 </div>
             </div>
@@ -618,4 +527,4 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
-    """ 
+    

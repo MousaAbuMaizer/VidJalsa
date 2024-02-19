@@ -4,6 +4,10 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b
 app = FastAPI()
 
 app.add_middleware(

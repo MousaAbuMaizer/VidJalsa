@@ -1,110 +1,13 @@
-import re
-import os
-import uuid
 
-
-def parse_json_like_string(json_string):
-    # Splitting the string into lines
-    lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
-    parsed_data = {}
-
-    # Variables to keep track of array processing
-    inside_array = False
-    array_key = ''
-    array_values = []
-
-    for line in lines:
-        # Check if we are starting an array
-        if '[' in line:
-            colon_index = line.find(':')
-            array_key = line[:colon_index].strip().strip('"{} ')
-            inside_array = True
-            continue
-
-        # Check if we are ending an array
-        if ']' in line:
-            inside_array = False
-            parsed_data[array_key] = array_values
-            array_values = []
-            continue
-
-        # Process lines inside an array
-        if inside_array:
-            array_value = line.strip().strip('"{}[], ')
-            if array_value:
-                array_values.append(array_value)
-            continue
-
-        # Finding the position of the colon to separate key and value
-        colon_index = line.find(':')
-        if colon_index != -1:
-            # Extracting the key
-            key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
-            value = line[colon_index + 1:].strip().strip('"{}[], ')
-            parsed_data[key] = value
-
-    return parsed_data
-
-
-def parse_article(content):
-    pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
-    matches = re.findall(pattern, content, re.DOTALL)
-
-    article_json = {'Paragraphs': []}
-    for key, value in matches:
-        if "Paragraph" in key:
-            article_json['Paragraphs'].append(value)
-        else:
-            article_json[key] = value
-
-    return article_json
-
-def DirectoryGenerator(html_content , deployment_directory):
-
-    user_id = str(uuid.uuid4())
-    user_output_dir = os.path.join(deployment_directory, user_id)
-    os.makedirs(user_output_dir, exist_ok=True)
-
-    with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
-        html_file.write(html_content)
-
-    return user_output_dir
-
-
-def extract_video_id(url: str) -> str:
-    regex_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)',
-        r'(?:https?:\/\/)?youtu\.be\/([^&\s]+)',  
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
-    ]
-
-    for pattern in regex_patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return ""
-
-
-def renderBlog(title,question,author,paragraphs):
-
-    paragraphs_html_content = ""
-    for paragraph in paragraphs:
-            paragraphs_html_content += f'    <p>{paragraph}</p>\n'
-
-    return f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{title}</title>
+        <title>Apple Vision Pro: Ushering in a New Era of Spatial Computing</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-        """ + """
+        
         <style>
                 body {
                 padding-top:5rem;
@@ -544,7 +447,7 @@ def renderBlog(title,question,author,paragraphs):
             }
 
         </style>
-        """ + f"""
+        
         
         
         </head>
@@ -588,19 +491,26 @@ def renderBlog(title,question,author,paragraphs):
                                 <a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
                             </div>
                             <div class="col-md-10">
-                                <a class="link-dark" style="display: block;" href="author.html">{author}</a>
+                                <a class="link-dark" style="display: block;" href="author.html">AIlexa Smith</a>
                                 <span class="author-description">Creator @ VidJalsa.</span>
                                 <span class="post-date">1 1 2030.</span>
                             </div>
                         </div>
 
-                        <h1 class="posttitle"> {title}</h1>
-                        <h2 class="question"> {question}</h2>
+                        <h1 class="posttitle"> Apple Vision Pro: Ushering in a New Era of Spatial Computing</h1>
+                        <h2 class="question"> How is the Apple Vision Pro revolutionizing our digital interaction and transforming our perception of reality?</h2>
 
                     </div>
 
                     <div class="article-post">
-                        {paragraphs_html_content}
+                            <p>Apple is ushering in a new era of spatial computing with the introduction of the Apple Vision Pro. This groundbreaking device is designed to revolutionize how we interact with our digital surroundings, providing a seamless blend of the physical and digital worlds. It is Apple's first-ever spatial operating system, called visionOS, that makes this possible. VisionOS brings your favorite apps right in front of you, but now, they exist within your space. It's a familiar yet groundbreaking experience, where you navigate with your eyes, tap to select, flick to scroll, and use your voice to dictate. This interaction with the digital world feels almost magical.</p>
+    <p>Apple Vision Pro is designed to be immersive, with apps taking on dimension, reacting to light, and casting shadows. These spatial experiences feel incredibly real, as if they are physically present in your space. The device does not isolate you from others. Instead, it recognizes when someone else is in the room, allowing you to see them and vice versa. This feature enhances the feeling of being physically present in a digital world.</p>
+    <p>The device also offers a unique way to view your photos and videos. Your living room can become a gallery, with life-size or any size photos and panoramas wrapping around you as if you are right where you took them. Apple Vision Pro also features Apple's first-ever 3D camera, allowing you to capture photos and videos with remarkable depth. This feature allows you to relive a memory as if you're right back in the exact moment.</p>
+    <p>Apple Vision Pro also transforms your entertainment experience. It brings the scale and wonder of a movie theater to whatever space you're in, casting a beautiful glow into the room, and allowing you to make the screen as big as you want. The device also features the most advanced Spatial Audio system ever from Apple, making you feel like you're a part of the action.</p>
+    <p>The device also enhances your workspace. The web comes to life at a fantastic scale, with text that is crisp and easy to read. Browsing the internet feels new, and Safari expands so you can see all your open tabs. Your favorite apps from Apple and the App Store are present, and you can arrange them however you like, working seamlessly across them. FaceTime looks and sounds amazing in Apple Vision Pro, making conversation more natural and collaboration even easier.</p>
+    <p>Apple Vision Pro is not just about powerful features; it also focuses on design and comfort. It is remarkably compact and beautiful, with a single piece of three-dimensionally formed laminated glass acting as a lens through which the cameras and sensors view the world. It also features a lightweight aluminum alloy frame that gently curves to wrap around your face. The device also comes with a modular system for the right fit, a light seal to keep stray light from your eyes, a soft frame that gently flexes and conforms to your unique features, a 3D knitted headband for cushioning, breathability, and stretch, and a high-performance battery that reduces weight to a minimum and slips easily into your pocket.</p>
+    <p>The Apple Vision Pro is an extraordinary device that brings spatial computing to life. It's not just about viewing the digital world but about interacting and immersing yourself in it. With its innovative features and design, the Apple Vision Pro is set to change the way we experience the digital world.</p>
+
                     </div>
                 </div>
             </div>
@@ -618,4 +528,4 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
-    """ 
+    

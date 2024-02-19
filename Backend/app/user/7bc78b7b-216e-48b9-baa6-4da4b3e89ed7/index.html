@@ -2,52 +2,7 @@ import re
 import os
 import uuid
 
-
-def parse_json_like_string(json_string):
-    # Splitting the string into lines
-    lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
-    parsed_data = {}
-
-    # Variables to keep track of array processing
-    inside_array = False
-    array_key = ''
-    array_values = []
-
-    for line in lines:
-        # Check if we are starting an array
-        if '[' in line:
-            colon_index = line.find(':')
-            array_key = line[:colon_index].strip().strip('"{} ')
-            inside_array = True
-            continue
-
-        # Check if we are ending an array
-        if ']' in line:
-            inside_array = False
-            parsed_data[array_key] = array_values
-            array_values = []
-            continue
-
-        # Process lines inside an array
-        if inside_array:
-            array_value = line.strip().strip('"{}[], ')
-            if array_value:
-                array_values.append(array_value)
-            continue
-
-        # Finding the position of the colon to separate key and value
-        colon_index = line.find(':')
-        if colon_index != -1:
-            # Extracting the key
-            key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
-            value = line[colon_index + 1:].strip().strip('"{}[], ')
-            parsed_data[key] = value
-
-    return parsed_data
-
+<<<<<<<< HEAD:Backend/app/api/processing/utils.py
 
 def parse_article(content):
     pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
@@ -62,7 +17,7 @@ def parse_article(content):
 
     return article_json
 
-def DirectoryGenerator(html_content , deployment_directory):
+def directory_generator(html_content , deployment_directory):
 
     user_id = str(uuid.uuid4())
     user_output_dir = os.path.join(deployment_directory, user_id)
@@ -73,6 +28,12 @@ def DirectoryGenerator(html_content , deployment_directory):
 
     return user_output_dir
 
+def generate_deployment_url(directory_name: str) -> str:
+    
+    print('Directory Name:', directory_name)
+    print(f"http://127.0.0.1:7000/{directory_name}/index.html")
+    
+    return f"http://127.0.0.1:7000/{directory_name}/index.html"
 
 def extract_video_id(url: str) -> str:
     regex_patterns = [
@@ -89,22 +50,24 @@ def extract_video_id(url: str) -> str:
     return ""
 
 
-def renderBlog(title,question,author,paragraphs):
+def render_blog(title,question,author,paragraphs):
 
     paragraphs_html_content = ""
     for paragraph in paragraphs:
             paragraphs_html_content += f'    <p>{paragraph}</p>\n'
 
     return f"""
+========
+>>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b:Backend/app/user/7bc78b7b-216e-48b9-baa6-4da4b3e89ed7/index.html
         <!DOCTYPE html>
         <html lang="en">
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{title}</title>
+        <title>Distinguishing Science from Pseudoscience: A Guide to Truth</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-        """ + """
+        
         <style>
                 body {
                 padding-top:5rem;
@@ -544,7 +507,7 @@ def renderBlog(title,question,author,paragraphs):
             }
 
         </style>
-        """ + f"""
+        
         
         
         </head>
@@ -588,19 +551,23 @@ def renderBlog(title,question,author,paragraphs):
                                 <a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
                             </div>
                             <div class="col-md-10">
-                                <a class="link-dark" style="display: block;" href="author.html">{author}</a>
+                                <a class="link-dark" style="display: block;" href="author.html">AI-Sophia Maxwell</a>
                                 <span class="author-description">Creator @ VidJalsa.</span>
                                 <span class="post-date">1 1 2030.</span>
                             </div>
                         </div>
 
-                        <h1 class="posttitle"> {title}</h1>
-                        <h2 class="question"> {question}</h2>
+                        <h1 class="posttitle"> Distinguishing Science from Pseudoscience: A Guide to Truth</h1>
+                        <h2 class="question"> What are the hallmarks of scientific rigor that help us separate it from pseudoscientific claims?</h2>
 
                     </div>
 
                     <div class="article-post">
-                        {paragraphs_html_content}
+                            <p>In the realm of knowledge, it is crucial to distinguish between science and pseudoscience. While both claim to provide explanations, their approaches and methods differ fundamentally. Science relies on rigorous testing, verifiability, and openness to refutation, while pseudoscience often resorts to vague claims, exaggerated assertions, and a lack of empirical evidence.</p>
+    <p>A key feature of science is its commitment to testability. Scientific hypotheses are formulated and subjected to rigorous experimentation and observation to determine their validity. In contrast, pseudoscience often relies on anecdotal evidence, personal experiences, or subjective interpretations, lacking a systematic approach to inquiry.</p>
+    <p>Science is characterized by its openness to revision and refinement. As new data and discoveries emerge, scientific theories are constantly challenged, updated, or replaced. Pseudoscience, on the other hand, tends to cling to its claims, even in the face of contradictory evidence.</p>
+    <p>To navigate the complex landscape of information, it is essential to embrace a scientific mindset. This involves setting aside preconceived notions, critically examining data, and recognizing the potential influence of biases on our beliefs. By embracing the principles of science, we can distinguish genuine knowledge from unfounded claims and make informed decisions based on evidence.</p>
+
                     </div>
                 </div>
             </div>
@@ -618,4 +585,8 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
+<<<<<<<< HEAD:Backend/app/api/processing/utils.py
     """ 
+========
+    
+>>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b:Backend/app/user/7bc78b7b-216e-48b9-baa6-4da4b3e89ed7/index.html

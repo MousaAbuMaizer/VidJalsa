@@ -1,110 +1,13 @@
-import re
-import os
-import uuid
 
-
-def parse_json_like_string(json_string):
-    # Splitting the string into lines
-    lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
-    parsed_data = {}
-
-    # Variables to keep track of array processing
-    inside_array = False
-    array_key = ''
-    array_values = []
-
-    for line in lines:
-        # Check if we are starting an array
-        if '[' in line:
-            colon_index = line.find(':')
-            array_key = line[:colon_index].strip().strip('"{} ')
-            inside_array = True
-            continue
-
-        # Check if we are ending an array
-        if ']' in line:
-            inside_array = False
-            parsed_data[array_key] = array_values
-            array_values = []
-            continue
-
-        # Process lines inside an array
-        if inside_array:
-            array_value = line.strip().strip('"{}[], ')
-            if array_value:
-                array_values.append(array_value)
-            continue
-
-        # Finding the position of the colon to separate key and value
-        colon_index = line.find(':')
-        if colon_index != -1:
-            # Extracting the key
-            key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
-            value = line[colon_index + 1:].strip().strip('"{}[], ')
-            parsed_data[key] = value
-
-    return parsed_data
-
-
-def parse_article(content):
-    pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
-    matches = re.findall(pattern, content, re.DOTALL)
-
-    article_json = {'Paragraphs': []}
-    for key, value in matches:
-        if "Paragraph" in key:
-            article_json['Paragraphs'].append(value)
-        else:
-            article_json[key] = value
-
-    return article_json
-
-def DirectoryGenerator(html_content , deployment_directory):
-
-    user_id = str(uuid.uuid4())
-    user_output_dir = os.path.join(deployment_directory, user_id)
-    os.makedirs(user_output_dir, exist_ok=True)
-
-    with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
-        html_file.write(html_content)
-
-    return user_output_dir
-
-
-def extract_video_id(url: str) -> str:
-    regex_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)',
-        r'(?:https?:\/\/)?youtu\.be\/([^&\s]+)',  
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
-    ]
-
-    for pattern in regex_patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return ""
-
-
-def renderBlog(title,question,author,paragraphs):
-
-    paragraphs_html_content = ""
-    for paragraph in paragraphs:
-            paragraphs_html_content += f'    <p>{paragraph}</p>\n'
-
-    return f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{title}</title>
+        <title>Sailing the Clouds with FastAPI and MongoDB Atlas: A Developer's Voyage</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-        """ + """
+        
         <style>
                 body {
                 padding-top:5rem;
@@ -544,7 +447,7 @@ def renderBlog(title,question,author,paragraphs):
             }
 
         </style>
-        """ + f"""
+        
         
         
         </head>
@@ -588,19 +491,31 @@ def renderBlog(title,question,author,paragraphs):
                                 <a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
                             </div>
                             <div class="col-md-10">
-                                <a class="link-dark" style="display: block;" href="author.html">{author}</a>
+                                <a class="link-dark" style="display: block;" href="author.html">Aiden InnovAI</a>
                                 <span class="author-description">Creator @ VidJalsa.</span>
                                 <span class="post-date">1 1 2030.</span>
                             </div>
                         </div>
 
-                        <h1 class="posttitle"> {title}</h1>
-                        <h2 class="question"> {question}</h2>
+                        <h1 class="posttitle"> Sailing the Clouds with FastAPI and MongoDB Atlas: A Developer's Voyage</h1>
+                        <h2 class="question"> How can modern developers harness the power of FastAPI and MongoDB Atlas to build scalable cloud-based applications?</h2>
 
                     </div>
 
                     <div class="article-post">
-                        {paragraphs_html_content}
+                            <p>Welcome to the exciting world of FastAPI and MongoDB Atlas! This guide will take you through the process of building a FastAPI application and connecting it to a NoSQL MongoDB database hosted on the cloud. By the end, you'll have a running application with full CRUD (Create, Read, Update, Delete) capabilities, all without the need to install anything on your local machine.</p>
+    <p>MongoDB Atlas is a fully-managed cloud database service that allows you to work with MongoDB databases without the hassle of managing the underlying infrastructure. To begin, you'll need to set up an account on MongoDB Atlas, which is free and doesn't require credit card details. After signing up, you'll create a cluster, which is also free on the M0 tier. MongoDB Atlas offers a choice between cloud providers like AWS, Google Cloud, or Azure. You can select the provider and region that's closest to you to minimize latency.</p>
+    <p>Once you've named your cluster (the default name is Cluster0, but you can choose your own), you'll proceed to create a database user with a username and password. This user will have the necessary permissions to access and manage your database.</p>
+    <p>With your MongoDB Atlas account and cluster ready, you'll focus on building your FastAPI application. FastAPI is a modern, fast web framework for building APIs with Python. It's asynchronous and based on standard Python type hints, ensuring high performance and developer-friendly code.</p>
+    <p>To connect your FastAPI application to MongoDB, you'll need to install a few Python packages, including `fastapi`, `uvicorn` (an ASGI server), and `pymongo`, which is the MongoDB driver for Python. Make sure to include the `srv` suffix in your `pymongo` installation to avoid any DNS-related errors.</p>
+    <p>In your FastAPI code, you'll define an API route to ping the MongoDB database and confirm the connection. Once that's successful, you'll move on to setting up the database configuration in your project, specifying the database name (for example, `todo_db`) and collection (similar to an SQL table, called `todo_collection` here).</p>
+    <p>Data models are essential in structuring the data you'll store in your database. In FastAPI, you'll use Pydantic models to define the data structure for your `todo` items, which will include fields like `name`, `description`, and `complete`, with appropriate data types.</p>
+    <p>Schemas play a crucial role in serialization and deserialization, converting JSON data from MongoDB into Python objects that FastAPI can use, and vice versa. You'll create schemas to handle this conversion process, ensuring that your application can interact with the database effectively.</p>
+    <p>The routes in your FastAPI application will handle various HTTP methods corresponding to CRUD operations. You'll implement: GET to retrieve all `todo` items or a specific item by its ID, POST to create a new `todo` item in the database, PUT to update an existing `todo` item, identified by its ID, and DELETE to remove a `todo` item from the database.</p>
+    <p>Each route will interact with the MongoDB collection using the appropriate PyMongo methods, such as `find`, `insert_one`, `find_one_and_update`, and `find_one_and_delete`.</p>
+    <p>With the routes defined, you can test your API using FastAPI's built-in Swagger UI. This interactive interface allows you to execute API calls and verify the responses, ensuring that your application is correctly performing CRUD operations on the MongoDB database.</p>
+    <p>By following this guide, you've learned how to create a FastAPI application, set up a MongoDB Atlas cluster, connect the two, and implement full CRUD functionality. You've achieved this without installing a database on your system, instead leveraging the power and convenience of cloud-hosted services. Whether you're a seasoned developer or just starting, this knowledge empowers you to build robust, scalable applications with cutting-edge technologies.</p>
+
                     </div>
                 </div>
             </div>
@@ -618,4 +533,4 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
-    """ 
+    

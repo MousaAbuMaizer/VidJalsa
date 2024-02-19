@@ -1,20 +1,23 @@
 import os
 import json
+import threading
 import time
-import asyncio
 import logging
-from uuid import uuid4
 from fastapi import HTTPException
-from fastapi import BackgroundTasks
+from langchain.chains import load_summarize_chain
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import YoutubeLoader
+
+from .utils import extract_video_id, DirectoryGenerator, renderBlog , parse_json_like_string
 from app.schemas import VideoUrls
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_openai import AzureChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-
-from .utils import extract_video_id, directory_generator, render_blog, generate_deployment_url
+from langchain.docstore.document import Document
 
 from dotenv import load_dotenv
+
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 import google.generativeai as genai
@@ -24,20 +27,24 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 genai.configure(api_key=GOOGLE_API_KEY)
 google_llm = ChatGoogleGenerativeAI(google_api_key=GOOGLE_API_KEY, model="gemini-pro")
-    
+
+
+load_dotenv()
+
 logger = logging.getLogger(__name__)
 
-AZURE_API_KEY = os.getenv('AZURE_API_KEY')
-AZURE_ENDPOINT = os.getenv('AZURE_ENDPOINT')
-DEPLOYMENT_DIRECTORY = "app/user"
+AZURE_API_KEY = os.getenv('AZURE_API_KEY128')
+AZURE_ENDPOINT = os.getenv('AZURE_ENDPOINT128')
+DEPLOYMENT_DIRECTORY = "path/to/deployment/directory"
 
-llm = AzureChatOpenAI(api_key=AZURE_API_KEY, model="gpt-4-32K", 
+llm = AzureChatOpenAI(api_key=AZURE_API_KEY, model="gpt-4",
                              openai_api_version="2023-07-01-preview", 
                              azure_endpoint=AZURE_ENDPOINT, temperature=0.55)
 
 output_parser = StrOutputParser()
 
-async def fetch_and_summarize_transcript(url: str) -> str:
+def fetch_and_summarize_transcript(url: str , result_container, index) :
+    start_thread_time = time.time()
     video_id = extract_video_id(url)
     transcript = YouTubeTranscriptApi.get_transcript(video_id)
     prompt1 = PromptTemplate.from_template("""
@@ -69,11 +76,36 @@ async def fetch_and_summarize_transcript(url: str) -> str:
     By diligently applying these refined guidelines, you will create a narrative that not only captivates and informs but also meets the high standards required for web page content. We appreciate your commitment to crafting content that resonates with readers and elevates their online experience.
 
     """)
-    chain = prompt1 | llm | output_parser
-    return chain.invoke({"transcript": transcript})
+    chain = prompt1 | google_llm | output_parser
+    result_container[index] = chain.invoke({"transcript": transcript})
+    end_thread_time = time.time()
+    print("=============================")
+    print(f"the url is being tested is {url}" )
+    print(f"time for the thread {index} is {end_thread_time - start_thread_time}" )
+    print("=============================")
+
+
 
 async def generate_final_article(combined_summarized_transcript: str) -> dict:
     print("Checkpoint 2-A")
+
+
+    '''''
+        The output must be formatted as a JSON object as follows:
+
+        ```json
+        {{
+            "Title": "Generated Title Based on Summary",
+            "Question": "Generated Question Based on Summary",
+            "Author": "Generated Author Name Including AI",
+            "Paragraphs": [
+                "First paragraph of the article...",
+                "Second paragraph of the article...",
+                "...additional paragraphs as derived from the summarized text"
+            ]
+        }}
+    '''''
+
     prompt2 = PromptTemplate.from_template("""
     **Task: Generate a Medium-Style Article as a JSON Object**
 
@@ -113,10 +145,11 @@ async def generate_final_article(combined_summarized_transcript: str) -> dict:
         ]
     }}
     ```
-
+    
     The content generation process should be strictly based on the input summary, without requiring any additional inputs. The JSON structure is designed to organize the content neatly, facilitating its direct application or web deployment.
 
-    """)
+    """
+     )
     final_chain = prompt2 | llm | output_parser
     
     print("Checkpoint 2-B")
@@ -124,7 +157,7 @@ async def generate_final_article(combined_summarized_transcript: str) -> dict:
     try:
         response = final_chain.invoke({'combined_summarized_transcript': combined_summarized_transcript})
         print("Checkpoint 2-C", response)
-        return json.loads(response)
+        return response
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
     
@@ -140,31 +173,77 @@ async def process_videos(video_urls: VideoUrls):
     
     print("Checkpoint 1")
     
-    try:
-        for url in video_urls.urls:
-            summarized_transcript = await fetch_and_summarize_transcript(url)
-            combined_summarized_transcript += summarized_transcript + "\n\n\n\n"
-        
-        print("Checkpoint 2")
-        json_output = await generate_final_article(combined_summarized_transcript)
-        print("Checkpoint 3")
-        title = json_output["Title"]
-        question = json_output["Question"]
-        author = json_output["Author"]
-        paragraphs = json_output["Paragraphs"]
-        
-        print("Checkpoint 4")
-        
-        html_content = render_blog(title, question, author, paragraphs)
-        
-        print("Checkpoint 5")
-        
-        directory_name = directory_generator(html_content, "app/user")
-        deployment_url = generate_deployment_url(directory_name)
+    # try:
+        # for url in video_urls.urls:
+        #     summarized_transcript = await fetch_and_summarize_transcript(url)
+        #     combined_summarized_transcript += summarized_transcript + "\n\n\n\n"
 
-        print(f"Processing Finished in {time.time() - start_time} seconds")
-        return {"message": "The Processing Is Finished!", "deployment_url": deployment_url}
+    results = [None for _ in range(len(video_urls.urls))]
+    start_time_thread = time.time()
+    threads = []
+    for i, url in enumerate(video_urls.urls):
+        thread = threading.Thread(target=fetch_and_summarize_transcript2, args=(url, results, i))
+        threads.append(thread)
+        thread.start()
 
-    except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
-        raise HTTPException(status_code=500, detail="An error occurred during video processing.")
+    for thread in threads:
+        thread.join()
+    end_time_thread = time.time()
+
+    print(f"hamza total time {end_time_thread - start_time_thread} ")
+
+    print(f" shitshit {results[0]}")
+    for transcript in results:
+        combined_summarized_transcript += transcript + "\n\n\n\n"
+
+    print("Checkpoint 2")
+    print(f"generate_final_article input is {combined_summarized_transcript}" )
+    json_output = await generate_final_article(combined_summarized_transcript)
+    print(json_output)
+    print("Checkpoint 3")
+    json_output = parse_json_like_string(json_output)
+    title = json_output["Title"]
+    question = json_output["Question"]
+    author = json_output["Author"]
+    paragraphs = json_output["Paragraphs"]
+
+    print("Checkpoint 4")
+
+    html_content = renderBlog(title, question, author, paragraphs)
+
+    print("Checkpoint 5")
+
+    directory_name = DirectoryGenerator(html_content, "app/user")
+    deployment_url = generate_deployment_url(directory_name)
+
+    print(f"Processing Finished in {time.time() - start_time} seconds")
+    return {"message": "The Processing Is Finished!", "deployment_url": deployment_url}
+
+    # except Exception as e:
+    #     logger.error(f"An error occurred nnnnn: {str(e)}")
+    #     raise HTTPException(status_code=500, detail="An error occurred during video processing.")
+
+
+
+def fetch_and_summarize_transcript2(url: str, result_container, index):
+    start_thread_time = time.time()
+
+
+    video_id = extract_video_id(url)
+    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+
+
+    splited_transcripts = []
+    transcript_spliter = RecursiveCharacterTextSplitter(chunk_size=32000, chunk_overlap=3200)
+    doc = [Document(page_content=str(transcript), metadata={"source": "local"})]
+    splited_transcripts.extend(transcript_spliter.split_documents(doc))
+    print(f"  hamza_splited_transcripts {splited_transcripts}")
+    print(f"  hamza_splited_transcripts_len {len(splited_transcripts)}")
+
+    summarize_chain = load_summarize_chain(llm=google_llm, chain_type="map_reduce")
+    result_container[index] = summarize_chain.run({'input_documents': splited_transcripts})
+    end_thread_time = time.time()
+    print("=============================")
+    print(f"the url is being tested is {url}")
+    print(f"time for the thread {index} is {end_thread_time - start_thread_time}")
+    print("=============================")

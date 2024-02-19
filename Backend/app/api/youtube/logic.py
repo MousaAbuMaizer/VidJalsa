@@ -1,5 +1,9 @@
 from googleapiclient.discovery import build
+<<<<<<< HEAD
 import os 
+=======
+import os
+>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b
 from isodate import parse_duration
 from fastapi import HTTPException
 from app.schemas import Video
@@ -7,6 +11,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b
 def initialize_youtube_service() -> object:
     """Initialize and return the YouTube service."""
     api_key = os.getenv('YOUTUBE_API_KEY')
@@ -24,7 +32,12 @@ def fetch_search_results(youtube, topic: str, max_results: int) -> list:
         order='relevance',
         maxResults=max_results,
         safeSearch='strict',
+<<<<<<< HEAD
         relevanceLanguage='en'
+=======
+        relevanceLanguage='en',
+        videoCaption='closedCaption'
+>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b
     ).execute()
 
 
@@ -36,7 +49,12 @@ def extract_video_ids(search_response: dict) -> list:
 def fetch_video_details(youtube, video_ids: list) -> dict:
     """Fetch details for a list of video IDs."""
     response = youtube.videos().list(part="contentDetails", id=",".join(video_ids)).execute()
+<<<<<<< HEAD
     return {item['id']: parse_duration(item['contentDetails']['duration']).total_seconds() for item in response['items']}
+=======
+    return {item['id']: parse_duration(item['contentDetails']['duration']).total_seconds() for item in
+            response['items']}
+>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b
 
 
 def filter_videos(video_ids: list, video_details_map: dict, search_response: dict, max_results: int) -> list:
@@ -65,7 +83,11 @@ def format_video_info(video_item: dict) -> dict:
     }
 
 
+<<<<<<< HEAD
 async def return_video_previews(video: Video) :
+=======
+async def return_video_previews(video: Video):
+>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b
     """Return a list of video previews based on the video topic."""
     try:
         youtube = initialize_youtube_service()
@@ -77,4 +99,8 @@ async def return_video_previews(video: Video) :
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+<<<<<<< HEAD
         raise HTTPException(status_code=500, detail="Failed to fetch video previews.")    
+=======
+        raise HTTPException(status_code=500, detail="Failed to fetch video previews.")
+>>>>>>> 33818dc86ccea265c36992c47e776e3d709f405b
