@@ -1,110 +1,13 @@
-import re
-import os
-import uuid
 
-
-def parse_json_like_string(json_string):
-    # Splitting the string into lines
-    lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
-    parsed_data = {}
-
-    # Variables to keep track of array processing
-    inside_array = False
-    array_key = ''
-    array_values = []
-
-    for line in lines:
-        # Check if we are starting an array
-        if '[' in line:
-            colon_index = line.find(':')
-            array_key = line[:colon_index].strip().strip('"{} ')
-            inside_array = True
-            continue
-
-        # Check if we are ending an array
-        if ']' in line:
-            inside_array = False
-            parsed_data[array_key] = array_values
-            array_values = []
-            continue
-
-        # Process lines inside an array
-        if inside_array:
-            array_value = line.strip().strip('"{}[], ')
-            if array_value:
-                array_values.append(array_value)
-            continue
-
-        # Finding the position of the colon to separate key and value
-        colon_index = line.find(':')
-        if colon_index != -1:
-            # Extracting the key
-            key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
-            value = line[colon_index + 1:].strip().strip('"{}[], ')
-            parsed_data[key] = value
-
-    return parsed_data
-
-
-def parse_article(content):
-    pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
-    matches = re.findall(pattern, content, re.DOTALL)
-
-    article_json = {'Paragraphs': []}
-    for key, value in matches:
-        if "Paragraph" in key:
-            article_json['Paragraphs'].append(value)
-        else:
-            article_json[key] = value
-
-    return article_json
-
-def DirectoryGenerator(html_content , deployment_directory):
-
-    user_id = str(uuid.uuid4())
-    user_output_dir = os.path.join(deployment_directory, user_id)
-    os.makedirs(user_output_dir, exist_ok=True)
-
-    with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
-        html_file.write(html_content)
-
-    return user_output_dir
-
-
-def extract_video_id(url: str) -> str:
-    regex_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)',
-        r'(?:https?:\/\/)?youtu\.be\/([^&\s]+)',  
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
-    ]
-
-    for pattern in regex_patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return ""
-
-
-def renderBlog(title,question,author,paragraphs):
-
-    paragraphs_html_content = ""
-    for paragraph in paragraphs:
-            paragraphs_html_content += f'    <p>{paragraph}</p>\n'
-
-    return f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{title}</title>
+        <title>Apple Vision Pro: The Dawn of a New Era in Spatial Computing</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-        """ + """
+        
         <style>
                 body {
                 padding-top:5rem;
@@ -549,14 +452,11 @@ def renderBlog(title,question,author,paragraphs):
                 align-items: center;
                 display: flex;
             }
-            .nav-item > .navbar-brand {
-                display: none;
-            }
 
         </style>
-        """ + f"""
         
-        
+
+
         </head>
         <body>
 
@@ -598,19 +498,24 @@ def renderBlog(title,question,author,paragraphs):
                                 <a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
                             </div>
                             <div class="col-md-10">
-                                <a class="link-dark" style="display: block;" href="author.html">{author}</a>
+                                <a class="link-dark" style="display: block;" href="author.html">AI Author - John Doe</a>
                                 <span class="author-description">Creator @ VidJalsa.</span>
                                 <span class="post-date">1 1 2030.</span>
                             </div>
                         </div>
 
-                        <h1 class="posttitle"> {title}</h1>
-                        <h2 class="question"> {question}</h2>
+                        <h1 class="posttitle"> Apple Vision Pro: The Dawn of a New Era in Spatial Computing</h1>
+                        <h2 class="question"> How is Apple Vision Pro reshaping the boundaries of spatial computing?</h2>
 
                     </div>
 
                     <div class="article-post">
-                        {paragraphs_html_content}
+                            <p>Apple Vision Pro, the latest innovation in spatial operating systems, marks the beginning of a transformative era in spatial computing. This revolutionary technology flawlessly merges the real world with the virtual, crafting an immersive digital canvas that transcends beyond the confines of traditional screens.</p>
+    <p>Apple Vision Pro allows users to interact effortlessly with applications that come alive in their immediate environment. It enables navigation of your surroundings with just your gaze, turning your favorite applications into tangible experiences. The applications cast shadows and respond to light, creating a remarkably realistic and engaging user experience.</p>
+    <p>The spatial experience provided by Apple Vision Pro also extends to the realm of entertainment. It immerses you in cinematic masterpieces with theater-like features. Spatial Audio engulfs you, making you feel like a part of the action, while the Environment feature transforms your space into a breathtaking cinematic setting.</p>
+    <p>Apple Vision Pro is designed not just for entertainment but also for productivity and gaming. Connect your controller and enjoy gaming on a large screen with incredible audio. It allows you to create the perfect workspace anywhere, with the web coming to life at an extraordinary scale. The text is crisp, easy to read, and makes browsing an entirely new experience.</p>
+    <p>To deliver these stunning digital experiences, Apple Vision Pro utilizes advanced technology while maintaining a compact and stylish design. A single piece of three-dimensionally formed laminated glass serves as a lens, while a lightweight aluminum alloy frame gently curves to wrap around your face. A modular system ensures a perfect fit, the Light Seal blocks out stray light, and a soft frame conforms to your unique features.</p>
+
                     </div>
                 </div>
             </div>
@@ -628,4 +533,4 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
-    """ 
+    

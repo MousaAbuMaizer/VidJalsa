@@ -33,8 +33,8 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-AZURE_API_KEY = os.getenv('AZURE_API_KEY128')
-AZURE_ENDPOINT = os.getenv('AZURE_ENDPOINT128')
+AZURE_API_KEY = os.getenv('AZURE_API_KEY')
+AZURE_ENDPOINT = os.getenv('AZURE_ENDPOINT')
 DEPLOYMENT_DIRECTORY = "path/to/deployment/directory"
 
 llm = AzureChatOpenAI(api_key=AZURE_API_KEY, model="gpt-4",
@@ -89,22 +89,6 @@ def fetch_and_summarize_transcript(url: str , result_container, index) :
 async def generate_final_article(combined_summarized_transcript: str) -> dict:
     print("Checkpoint 2-A")
 
-
-    '''''
-        The output must be formatted as a JSON object as follows:
-
-        ```json
-        {{
-            "Title": "Generated Title Based on Summary",
-            "Question": "Generated Question Based on Summary",
-            "Author": "Generated Author Name Including AI",
-            "Paragraphs": [
-                "First paragraph of the article...",
-                "Second paragraph of the article...",
-                "...additional paragraphs as derived from the summarized text"
-            ]
-        }}
-    '''''
 
     prompt2 = PromptTemplate.from_template("""
     **Task: Generate a Medium-Style Article as a JSON Object**
@@ -173,55 +157,51 @@ async def process_videos(video_urls: VideoUrls):
     
     print("Checkpoint 1")
     
-    # try:
-        # for url in video_urls.urls:
-        #     summarized_transcript = await fetch_and_summarize_transcript(url)
-        #     combined_summarized_transcript += summarized_transcript + "\n\n\n\n"
+    try:
 
-    results = [None for _ in range(len(video_urls.urls))]
-    start_time_thread = time.time()
-    threads = []
-    for i, url in enumerate(video_urls.urls):
-        thread = threading.Thread(target=fetch_and_summarize_transcript2, args=(url, results, i))
-        threads.append(thread)
-        thread.start()
+        results = [None for _ in range(len(video_urls.urls))]
+        start_time_thread = time.time()
+        threads = []
+        for i, url in enumerate(video_urls.urls):
+            thread = threading.Thread(target=fetch_and_summarize_transcript2, args=(url, results, i))
+            threads.append(thread)
+            thread.start()
 
-    for thread in threads:
-        thread.join()
-    end_time_thread = time.time()
+        for thread in threads:
+            thread.join()
+        end_time_thread = time.time()
 
-    print(f"hamza total time {end_time_thread - start_time_thread} ")
+        print(f"hamza total time {end_time_thread - start_time_thread} ")
 
-    print(f" shitshit {results[0]}")
-    for transcript in results:
-        combined_summarized_transcript += transcript + "\n\n\n\n"
+        for transcript in results:
+            combined_summarized_transcript += transcript + "\n\n\n\n"
 
-    print("Checkpoint 2")
-    print(f"generate_final_article input is {combined_summarized_transcript}" )
-    json_output = await generate_final_article(combined_summarized_transcript)
-    print(json_output)
-    print("Checkpoint 3")
-    json_output = parse_json_like_string(json_output)
-    title = json_output["Title"]
-    question = json_output["Question"]
-    author = json_output["Author"]
-    paragraphs = json_output["Paragraphs"]
+        print("Checkpoint 2")
+        print(f"generate_final_article input is {combined_summarized_transcript}" )
+        json_output = await generate_final_article(combined_summarized_transcript)
+        print(json_output)
+        print("Checkpoint 3")
+        json_output = parse_json_like_string(json_output)
+        title = json_output["Title"]
+        question = json_output["Question"]
+        author = json_output["Author"]
+        paragraphs = json_output["Paragraphs"]
 
-    print("Checkpoint 4")
+        print("Checkpoint 4")
 
-    html_content = renderBlog(title, question, author, paragraphs)
+        html_content = renderBlog(title, question, author, paragraphs)
 
-    print("Checkpoint 5")
+        print("Checkpoint 5")
 
-    directory_name = DirectoryGenerator(html_content, "app/user")
-    deployment_url = generate_deployment_url(directory_name)
+        directory_name = DirectoryGenerator(html_content, "app/user")
+        deployment_url = generate_deployment_url(directory_name)
 
-    print(f"Processing Finished in {time.time() - start_time} seconds")
-    return {"message": "The Processing Is Finished!", "deployment_url": deployment_url}
+        print(f"Processing Finished in {time.time() - start_time} seconds")
+        return {"message": "The Processing Is Finished!", "deployment_url": deployment_url}
 
-    # except Exception as e:
-    #     logger.error(f"An error occurred nnnnn: {str(e)}")
-    #     raise HTTPException(status_code=500, detail="An error occurred during video processing.")
+    except Exception as e:
+        logger.error(f"An error occurred nnnnn: {str(e)}")
+        raise HTTPException(status_code=500, detail="An error occurred during video processing.")
 
 
 

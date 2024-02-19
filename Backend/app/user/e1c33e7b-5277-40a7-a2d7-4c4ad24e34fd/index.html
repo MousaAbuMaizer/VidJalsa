@@ -1,110 +1,13 @@
-import re
-import os
-import uuid
 
-
-def parse_json_like_string(json_string):
-    # Splitting the string into lines
-    lines = json_string.strip().split('\n')
-
-    # Dictionary to hold the parsed data
-    parsed_data = {}
-
-    # Variables to keep track of array processing
-    inside_array = False
-    array_key = ''
-    array_values = []
-
-    for line in lines:
-        # Check if we are starting an array
-        if '[' in line:
-            colon_index = line.find(':')
-            array_key = line[:colon_index].strip().strip('"{} ')
-            inside_array = True
-            continue
-
-        # Check if we are ending an array
-        if ']' in line:
-            inside_array = False
-            parsed_data[array_key] = array_values
-            array_values = []
-            continue
-
-        # Process lines inside an array
-        if inside_array:
-            array_value = line.strip().strip('"{}[], ')
-            if array_value:
-                array_values.append(array_value)
-            continue
-
-        # Finding the position of the colon to separate key and value
-        colon_index = line.find(':')
-        if colon_index != -1:
-            # Extracting the key
-            key = line[:colon_index].strip().strip('"{} ')
-            # Extracting the value
-            value = line[colon_index + 1:].strip().strip('"{}[], ')
-            parsed_data[key] = value
-
-    return parsed_data
-
-
-def parse_article(content):
-    pattern = r'\*\*(.+?)\*\*:\s*"(.+?)"'
-    matches = re.findall(pattern, content, re.DOTALL)
-
-    article_json = {'Paragraphs': []}
-    for key, value in matches:
-        if "Paragraph" in key:
-            article_json['Paragraphs'].append(value)
-        else:
-            article_json[key] = value
-
-    return article_json
-
-def DirectoryGenerator(html_content , deployment_directory):
-
-    user_id = str(uuid.uuid4())
-    user_output_dir = os.path.join(deployment_directory, user_id)
-    os.makedirs(user_output_dir, exist_ok=True)
-
-    with open(os.path.join(user_output_dir, "index.html"), "w") as html_file:
-        html_file.write(html_content)
-
-    return user_output_dir
-
-
-def extract_video_id(url: str) -> str:
-    regex_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\s]+)',
-        r'(?:https?:\/\/)?youtu\.be\/([^&\s]+)',  
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\s]+)', 
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\s]+)'
-    ]
-
-    for pattern in regex_patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return ""
-
-
-def renderBlog(title,question,author,paragraphs):
-
-    paragraphs_html_content = ""
-    for paragraph in paragraphs:
-            paragraphs_html_content += f'    <p>{paragraph}</p>\n'
-
-    return f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{title}</title>
+        <title>Apple Pro: A Gateway to the Future of Immersive Computing</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-        """ + """
+        
         <style>
                 body {
                 padding-top:5rem;
@@ -549,14 +452,11 @@ def renderBlog(title,question,author,paragraphs):
                 align-items: center;
                 display: flex;
             }
-            .nav-item > .navbar-brand {
-                display: none;
-            }
 
         </style>
-        """ + f"""
         
-        
+
+
         </head>
         <body>
 
@@ -570,7 +470,7 @@ def renderBlog(title,question,author,paragraphs):
             <p>🪑</p>
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                     <a class="nav-link" href="index.html">Stories <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
@@ -598,19 +498,23 @@ def renderBlog(title,question,author,paragraphs):
                                 <a href="author.html"><img class="author-thumb" src="https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x" alt="Sal"></a>
                             </div>
                             <div class="col-md-10">
-                                <a class="link-dark" style="display: block;" href="author.html">{author}</a>
+                                <a class="link-dark" style="display: block;" href="author.html">AI-Powered Summarization</a>
                                 <span class="author-description">Creator @ VidJalsa.</span>
                                 <span class="post-date">1 1 2030.</span>
                             </div>
                         </div>
 
-                        <h1 class="posttitle"> {title}</h1>
-                        <h2 class="question"> {question}</h2>
+                        <h1 class="posttitle"> Apple Pro: A Gateway to the Future of Immersive Computing</h1>
+                        <h2 class="question"> What Makes Apple's Pro Headset the Vanguard of Innovative Computing?</h2>
 
                     </div>
 
                     <div class="article-post">
-                        {paragraphs_html_content}
+                            <p>Welcome to the dawn of a new era with Apple Pro, the revolutionary mixed reality headset from Apple. What sets this apart is its ability to blur the boundaries between the digital and physical worlds. The magic is driven by the cutting-edge visionOS operating system, which empowers you to interact with digital content in the most intuitive ways - through gestures and voice commands.</p>
+    <p>Prepare to immerse yourself in breathtaking virtual environments, all thanks to Pro's high-resolution micro-OLED displays. The vibrant colors and exceptional clarity transport you into virtual realms with unparalleled realism. To complement the visual experience, the Spatial Audio system delivers a truly immersive soundscape. This system personalizes sound to your ears while simulating the acoustics of your surroundings, creating a rich and dynamic auditory experience.</p>
+    <p>The Pro's advanced sensors and eye-tracking technology are game-changers in the realm of interactivity. They seamlessly track your movements and gaze, allowing you to interact effortlessly with virtual objects and environments. At the heart of this powerhouse are the M2 and R1 chips, which deliver exceptional performance and efficiency. Whether it's demanding tasks or ensuring smooth and responsive experiences, Pro handles it all effortlessly.</p>
+    <p>Beyond the technological marvels, Pro has been crafted with comfort in mind. Its lightweight design and adjustable fit allow for extended use without discomfort. It invites you to step into virtual worlds and collaborate with others in immersive and engaging ways, transcending the limitations of traditional computing devices. Apple Pro is not just a headset; it's a gateway to a new era of computing where creativity, collaboration, and entertainment reach new heights.</p>
+
                     </div>
                 </div>
             </div>
@@ -628,4 +532,4 @@ def renderBlog(title,question,author,paragraphs):
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         </body>
         </html>
-    """ 
+    
